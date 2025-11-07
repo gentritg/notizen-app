@@ -22,6 +22,20 @@ class SecurityHeaders
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
+        $allowedOrigins = [
+            'http://localhost:8000',
+            'http://127.0.0.1:8000',
+            'https://notizen-app.ddev.site',
+        ];
+
+        $origin = $request->header('Origin');
+        if (in_array($origin, $allowedOrigins)) {
+            $response->headers->set('Access-Control-Allow-Origin', $origin);
+            $response->headers->set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+            $response->headers->set('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+            $response->headers->set('Access-Control-Max-Age', '3600');
+        }
+
         return $response;
     }
 }
