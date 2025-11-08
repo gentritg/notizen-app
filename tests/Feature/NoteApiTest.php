@@ -20,8 +20,8 @@ class NoteApiTest extends TestCase
             ->assertJsonStructure([
                 'success',
                 'data' => [
-                    '*' => ['id', 'title', 'content', 'is_important', 'created_at', 'updated_at']
-                ]
+                    '*' => ['id', 'title', 'content', 'is_important', 'created_at', 'updated_at'],
+                ],
             ])
             ->assertJsonCount(3, 'data');
     }
@@ -31,7 +31,7 @@ class NoteApiTest extends TestCase
         $noteData = [
             'title' => 'Test Note',
             'content' => 'This is a test note content.',
-            'is_important' => true
+            'is_important' => true,
         ];
 
         $response = $this->postJson('/api/notes', $noteData);
@@ -39,23 +39,23 @@ class NoteApiTest extends TestCase
         $response->assertStatus(201)
             ->assertJson([
                 'success' => true,
-                'message' => 'Note created successfully'
+                'message' => 'Note created successfully',
             ])
             ->assertJsonStructure([
-                'data' => ['id', 'title', 'content', 'is_important', 'created_at', 'updated_at']
+                'data' => ['id', 'title', 'content', 'is_important', 'created_at', 'updated_at'],
             ]);
 
         $this->assertDatabaseHas('notes', [
             'title' => 'Test Note',
             'content' => 'This is a test note content.',
-            'is_important' => true
+            'is_important' => true,
         ]);
     }
 
     public function test_create_note_validation_fails(): void
     {
         $response = $this->postJson('/api/notes', [
-            'content' => 'Missing title'
+            'content' => 'Missing title',
         ]);
 
         $response->assertStatus(422)
@@ -74,8 +74,8 @@ class NoteApiTest extends TestCase
                 'data' => [
                     'id' => $note->id,
                     'title' => $note->title,
-                    'content' => $note->content
-                ]
+                    'content' => $note->content,
+                ],
             ]);
     }
 
@@ -83,12 +83,12 @@ class NoteApiTest extends TestCase
     {
         $note = Note::factory()->create([
             'title' => 'Original Title',
-            'is_important' => false
+            'is_important' => false,
         ]);
 
         $updateData = [
             'title' => 'Updated Title',
-            'is_important' => true
+            'is_important' => true,
         ];
 
         $response = $this->putJson("/api/notes/{$note->id}", $updateData);
@@ -96,13 +96,13 @@ class NoteApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Note updated successfully'
+                'message' => 'Note updated successfully',
             ]);
 
         $this->assertDatabaseHas('notes', [
             'id' => $note->id,
             'title' => 'Updated Title',
-            'is_important' => true
+            'is_important' => true,
         ]);
     }
 
@@ -114,11 +114,11 @@ class NoteApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson([
                 'success' => true,
-                'message' => 'Note deleted successfully'
+                'message' => 'Note deleted successfully',
             ]);
 
         $this->assertDatabaseMissing('notes', [
-            'id' => $note->id
+            'id' => $note->id,
         ]);
     }
 
@@ -173,17 +173,17 @@ class NoteApiTest extends TestCase
         Note::factory()->create([
             'title' => 'Important Laravel Note',
             'content' => 'Laravel content',
-            'is_important' => true
+            'is_important' => true,
         ]);
         Note::factory()->create([
             'title' => 'Regular Laravel Note',
             'content' => 'Laravel content',
-            'is_important' => false
+            'is_important' => false,
         ]);
         Note::factory()->create([
             'title' => 'Important Vue Note',
             'content' => 'Vue content',
-            'is_important' => true
+            'is_important' => true,
         ]);
 
         $response = $this->getJson('/api/notes?search=Laravel&is_important=1&sort_by=title&sort_order=asc');
@@ -199,7 +199,7 @@ class NoteApiTest extends TestCase
     {
         $note = Note::factory()->create([
             'title' => 'Test Note',
-            'completed_at' => null
+            'completed_at' => null,
         ]);
 
         $response = $this->patchJson("/api/notes/{$note->id}/toggle-completed");
@@ -207,11 +207,11 @@ class NoteApiTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
-            'message' => 'Note marked as completed'
+            'message' => 'Note marked as completed',
         ]);
-        
+
         $this->assertNotNull($response->json('data.completed_at'));
-        
+
         $note->refresh();
         $this->assertNotNull($note->completed_at);
 
@@ -220,11 +220,11 @@ class NoteApiTest extends TestCase
         $response->assertStatus(200);
         $response->assertJson([
             'success' => true,
-            'message' => 'Note marked as not completed'
+            'message' => 'Note marked as not completed',
         ]);
-        
+
         $this->assertNull($response->json('data.completed_at'));
-        
+
         $note->refresh();
         $this->assertNull($note->completed_at);
     }
@@ -233,12 +233,12 @@ class NoteApiTest extends TestCase
     {
         Note::factory()->create([
             'title' => 'Open Note',
-            'completed_at' => null
+            'completed_at' => null,
         ]);
 
         Note::factory()->create([
             'title' => 'Completed Note',
-            'completed_at' => now()
+            'completed_at' => now(),
         ]);
 
         $response = $this->getJson('/api/notes');
@@ -250,7 +250,7 @@ class NoteApiTest extends TestCase
     public function test_note_factory_creates_notes_with_completed_at(): void
     {
         $note = Note::factory()->create([
-            'completed_at' => now()->subDay()
+            'completed_at' => now()->subDay(),
         ]);
 
         $this->assertNotNull($note->completed_at);

@@ -3,139 +3,99 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Note\IndexNoteRequest;
+use App\Http\Requests\Note\StoreNoteRequest;
+use App\Http\Requests\Note\UpdateNoteRequest;
+use App\Http\Resources\NoteResource;
 use App\Models\Note;
-use Illuminate\Http\Request;
+use App\Repositories\Contracts\NoteRepositoryInterface;
 use Illuminate\Http\JsonResponse;
 
 class NoteController extends Controller
 {
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function index(Request $request): JsonResponse
+    public function __construct(
+        protected NoteRepositoryInterface $noteRepository
+    ) {}
+
+    public function index(IndexNoteRequest $request): JsonResponse
     {
-        $request->validate([
-            'search' => 'nullable|string|max:100',
-            'is_important' => 'nullable|boolean',
-            'sort_by' => 'nullable|in:created_at,updated_at,title,is_important',
-            'sort_order' => 'nullable|in:asc,desc'
-        ]);
-
-        $query = Note::query();
-
-        if ($request->filled('search')) {
-            $searchTerm = $request->input('search');
-
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('title', 'like', "%{$searchTerm}%")
-                  ->orWhere('content', 'like', "%{$searchTerm}%");
-            });
-        }
-
-        if ($request->filled('is_important')) {
-            $query->where('is_important', $request->boolean('is_important'));
-        }
-
-        $sortBy = $request->input('sort_by', 'created_at');
-        $sortOrder = $request->input('sort_order', 'desc');
-
-        $allowedSortFields = ['created_at', 'updated_at', 'title', 'is_important'];
-        $allowedSortOrders = ['asc', 'desc'];
-
-        if (in_array($sortBy, $allowedSortFields) && in_array($sortOrder, $allowedSortOrders)) {
-            $query->orderBy($sortBy, $sortOrder);
-        } else {
-            $query->orderBy('created_at', 'desc');
-        }
-
-        $notes = $query->limit(1000)->get();
+        $notes = $this->noteRepository->search(
+            $request->validated(),
+            $request->getPerPage()
+        );
 
         return response()->json([
             'success' => true,
-            'data' => $notes
+            'data' => NoteResource::collection($notes->items()),
+            'meta' => [
+                'current_page' => $notes->currentPage(),
+                'last_page' => $notes->lastPage(),
+                'per_page' => $notes->perPage(),
+                'total' => $notes->total(),
+                'from' => $notes->firstItem(),
+                'to' => $notes->lastItem(),
+            ],
+            'links' => [
+                'first' => $notes->url(1),
+                'last' => $notes->url($notes->lastPage()),
+                'prev' => $notes->previousPageUrl(),
+                'next' => $notes->nextPageUrl(),
+            ],
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function store(Request $request): JsonResponse
+    public function store(StoreNoteRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'content' => 'required|string|max:10000',
-            'is_important' => 'boolean'
-        ]);
-
-        $note = Note::create($validated);
+        $note = $this->noteRepository->create($request->validated());
 
         return response()->json([
             'success' => true,
             'message' => 'Note created successfully',
-            'data' => $note
+            'data' => new NoteResource($note),
         ], 201);
     }
 
-    /**
-     * @param Note $note
-     * @return JsonResponse
-     */
     public function show(Note $note): JsonResponse
     {
         return response()->json([
             'success' => true,
-            'data' => $note
+            'data' => new NoteResource($note),
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @param Note $note
-     * @return JsonResponse
-     */
-    public function update(Request $request, Note $note): JsonResponse
+    public function update(UpdateNoteRequest $request, Note $note): JsonResponse
     {
-        $validated = $request->validate([
-            'title' => 'sometimes|required|string|max:255',
-            'content' => 'sometimes|required|string|max:10000',
-            'is_important' => 'sometimes|boolean'
-        ]);
-
-        $note->update($validated);
+        $note = $this->noteRepository->update($note, $request->validated());
 
         return response()->json([
             'success' => true,
             'message' => 'Note updated successfully',
-            'data' => $note
+            'data' => new NoteResource($note),
         ]);
     }
 
     public function destroy(Note $note): JsonResponse
     {
-        $note->delete();
+        $this->noteRepository->delete($note);
 
         return response()->json([
             'success' => true,
-            'message' => 'Note deleted successfully'
+            'message' => 'Note deleted successfully',
         ]);
     }
 
-    /**
-     * @param Note $note
-     * @return JsonResponse
-     */
     public function toggleCompleted(Note $note): JsonResponse
     {
-        $isNowCompleted = $note->toggleCompleted();
+        $note = $this->noteRepository->toggleCompleted($note);
+
+        $message = $note->completed_at
+            ? 'Note marked as completed'
+            : 'Note marked as not completed';
 
         return response()->json([
             'success' => true,
-            'message' => $isNowCompleted
-                ? 'Note marked as completed'
-                : 'Note marked as not completed',
-            'data' => $note->fresh()
+            'message' => $message,
+            'data' => new NoteResource($note),
         ]);
     }
 }

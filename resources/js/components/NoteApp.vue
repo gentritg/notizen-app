@@ -32,7 +32,7 @@
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
-            📝 Offen
+            Offen
           </button>
           <button
             @click="filterCompleted = true"
@@ -43,7 +43,7 @@
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
-            ✓ Erledigt
+            Erledigt
           </button>
 
           <div class="border-l border-gray-300 mx-2"></div>
@@ -68,7 +68,7 @@
                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
             ]"
           >
-            ⭐ Wichtig
+            Wichtig
           </button>
         </div>
 
@@ -116,7 +116,7 @@
 
     <div v-else class="bg-white rounded-lg shadow-sm p-12 text-center">
       <div class="text-gray-400 mb-4">
-        <svg class="w-24 h-24 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-24 h-24 mx-auto" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       </div>
@@ -131,6 +131,51 @@
       >
         Erste Notiz erstellen
       </button>
+    </div>
+
+    <div v-if="!loading && pagination.lastPage > 1" class="flex items-center justify-center gap-2 mt-6">
+      <button
+        @click="changePage(pagination.currentPage - 1)"
+        :disabled="pagination.currentPage === 1"
+        class="px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white border border-gray-300 text-gray-700 hover:bg-gray-50"
+        :class="{ 'hover:bg-gray-50': pagination.currentPage > 1 }"
+      >
+        ← Zurück
+      </button>
+
+      <div class="flex gap-1">
+        <button
+          v-for="page in paginationRange"
+          :key="page"
+          @click="page !== '...' && changePage(page)"
+          :disabled="page === '...'"
+          class="px-4 py-2 rounded-lg font-medium transition-colors"
+          :class="
+            page === pagination.currentPage
+              ? 'bg-blue-600 text-white'
+              : page === '...'
+              ? 'cursor-default text-gray-400'
+              : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50'
+          "
+        >
+          {{ page }}
+        </button>
+      </div>
+
+      <button
+        @click="changePage(pagination.currentPage + 1)"
+        :disabled="pagination.currentPage === pagination.lastPage"
+        class="px-4 py-2 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed bg-white border border-gray-300 text-gray-700"
+        :class="{ 'hover:bg-gray-50': pagination.currentPage < pagination.lastPage }"
+      >
+        Weiter →
+      </button>
+    </div>
+
+    <div v-if="!loading && pagination.total > 0" class="text-center text-sm text-gray-600 mt-4">
+      Zeige {{ (pagination.currentPage - 1) * pagination.perPage + 1 }} bis
+      {{ Math.min(pagination.currentPage * pagination.perPage, pagination.total) }}
+      von {{ pagination.total }} Notizen
     </div>
 
     <NoteModal
@@ -153,7 +198,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import axios from 'axios';
 import NoteCard from './NoteCard.vue';
 import NoteModal from './NoteModal.vue';
@@ -172,58 +217,85 @@ const isEditing = ref(false);
 const toasts = ref([]);
 const highlightedNoteId = ref(null);
 const noteRefs = ref({});
+const pagination = ref({
+  currentPage: 1,
+  lastPage: 1,
+  perPage: 15,
+  total: 0
+});
 let toastIdCounter = 0;
+let searchTimeout = null;
 
 const filteredNotes = computed(() => {
   let filtered = notes.value;
 
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    filtered = filtered.filter(note =>
-      note.title.toLowerCase().includes(query) ||
-      note.content.toLowerCase().includes(query)
-    );
-  }
-
-  if (filterImportant.value !== null) {
-    filtered = filtered.filter(note => note.is_important === filterImportant.value);
-  }
-
   if (filterCompleted.value !== null) {
     filtered = filtered.filter(note => {
-      const isCompleted = note.completed_at !== null;
+      const isCompleted = note.is_completed || note.completed_at !== null;
       return isCompleted === filterCompleted.value;
     });
   }
 
-  const [sortField, sortOrder] = sortBy.value.split('-');
-  filtered = [...filtered].sort((a, b) => {
-    let aVal = a[sortField];
-    let bVal = b[sortField];
-
-    if (sortField === 'created_at') {
-      aVal = new Date(aVal);
-      bVal = new Date(bVal);
-    } else if (typeof aVal === 'string') {
-      aVal = aVal.toLowerCase();
-      bVal = bVal.toLowerCase();
-    }
-
-    if (sortOrder === 'asc') {
-      return aVal > bVal ? 1 : aVal < bVal ? -1 : 0;
-    }
-    return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
-  });
-
   return filtered;
 });
 
-const fetchNotes = async () => {
+const paginationRange = computed(() => {
+  const current = pagination.value.currentPage;
+  const last = pagination.value.lastPage;
+  const delta = 2;
+  const range = [];
+
+  for (let i = Math.max(2, current - delta); i <= Math.min(last - 1, current + delta); i++) {
+    range.push(i);
+  }
+
+  if (current - delta > 2) {
+    range.unshift('...');
+  }
+  if (current + delta < last - 1) {
+    range.push('...');
+  }
+
+  range.unshift(1);
+  if (last > 1) {
+    range.push(last);
+  }
+
+  return range;
+});
+
+const fetchNotes = async (page = 1) => {
   try {
     loading.value = true;
     error.value = null;
-    const response = await axios.get('/api/notes');
+
+    const [sortField, sortOrder] = sortBy.value.split('-');
+    const params = {
+      page,
+      per_page: pagination.value.perPage,
+      sort_by: sortField,
+      sort_order: sortOrder
+    };
+
+    if (searchQuery.value) {
+      params.search = searchQuery.value;
+    }
+
+    if (filterImportant.value !== null) {
+      params.is_important = filterImportant.value;
+    }
+
+    const response = await axios.get('/api/notes', { params });
     notes.value = response.data.data;
+
+    if (response.data.meta) {
+      pagination.value = {
+        currentPage: response.data.meta.current_page,
+        lastPage: response.data.meta.last_page,
+        perPage: response.data.meta.per_page,
+        total: response.data.meta.total
+      };
+    }
   } catch (err) {
     error.value = 'Fehler beim Laden der Notizen';
     console.error('Error fetching notes:', err);
@@ -260,8 +332,8 @@ const saveNote = async (noteData) => {
       response = await axios.post('/api/notes', noteData);
       showToast(`Notiz "${noteData.title}" wurde erstellt`, 'success');
     }
-    
-    await fetchNotes();
+
+    await fetchNotes(isEditing.value ? pagination.value.currentPage : 1);
     closeModal();
 
     if (response.data.data) {
@@ -283,7 +355,12 @@ const deleteNote = async (noteId) => {
 
   try {
     await axios.delete(`/api/notes/${noteId}`);
-    await fetchNotes();
+
+    const shouldGoToPreviousPage =
+      filteredNotes.value.length === 1 &&
+      pagination.value.currentPage > 1;
+
+    await fetchNotes(shouldGoToPreviousPage ? pagination.value.currentPage - 1 : pagination.value.currentPage);
     showToast(`Notiz "${noteTitle}" wurde gelöscht`, 'success');
   } catch (err) {
     console.error('Error deleting note:', err);
@@ -302,19 +379,19 @@ const removeToast = (id) => {
 
 const highlightAndScrollToNote = async (noteId) => {
   await nextTick();
-  
+
   highlightedNoteId.value = noteId;
-  
+
   await nextTick();
-  
+
   const noteElement = noteRefs.value[noteId];
   if (noteElement && noteElement.$el) {
-    noteElement.$el.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'center' 
+    noteElement.$el.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center'
     });
   }
-  
+
   setTimeout(() => {
     highlightedNoteId.value = null;
   }, 5000);
@@ -323,16 +400,16 @@ const highlightAndScrollToNote = async (noteId) => {
 const toggleCompleted = async (noteId) => {
   try {
     const response = await axios.patch(`/api/notes/${noteId}/toggle-completed`);
-    
+
     const noteIndex = notes.value.findIndex(n => n.id === noteId);
     if (noteIndex !== -1) {
       notes.value[noteIndex] = response.data.data;
     }
-    
+
     const isCompleted = response.data.data.completed_at !== null;
     showToast(
-      isCompleted 
-        ? `Notiz "${response.data.data.title}" als erledigt markiert ✓` 
+      isCompleted
+        ? `Notiz "${response.data.data.title}" als erledigt markiert`
         : `Notiz "${response.data.data.title}" wieder geöffnet`,
       'success'
     );
@@ -341,6 +418,28 @@ const toggleCompleted = async (noteId) => {
     showToast('Fehler beim Aktualisieren der Notiz', 'error');
   }
 };
+
+const debouncedFetchNotes = () => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    fetchNotes(1);
+  }, 300);
+};
+
+const changePage = (page) => {
+  if (page >= 1 && page <= pagination.value.lastPage) {
+    fetchNotes(page);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+};
+
+watch(searchQuery, () => {
+  debouncedFetchNotes();
+});
+
+watch([filterImportant, sortBy], () => {
+  fetchNotes(1);
+});
 
 onMounted(() => {
   fetchNotes();

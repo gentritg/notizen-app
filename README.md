@@ -1,57 +1,57 @@
 # Notizen-App
 
-Eine moderne Webanwendung zur Verwaltung von Notizen, gebaut mit Laravel und Vue 3.
+Eine simple Notizen-App, die ich mit Laravel und Vue 3 gebaut habe. Perfekt für den Alltag – egal ob für schnelle Gedanken, Todo-Listen oder wichtige Aufgaben.
 
-## Features
+## Was kann die App?
 
-### Grundfunktionen
-- Notizen erstellen, bearbeiten und löschen
-- Notizen anzeigen mit Titel, Inhalt und Erstellungsdatum
-- Notizen als erledigt markieren (mit Timestamp)
-- Wichtige Notizen markieren
-- Responsives Design (Mobile & Desktop)
+### Die Basics
+- Notizen erstellen, bearbeiten und löschen – wie man's erwartet
+- Jede Notiz hat einen Titel, Inhalt und zeigt, wann sie erstellt wurde
+- Notizen können als erledigt abgehakt werden (speichert auch den Zeitpunkt)
+- Wichtige Notizen lassen sich markieren
+- Sieht auf'm Handy genauso gut aus wie am Desktop
 
-### Bonus-Features
-- **Such-Funktion**: Notizen nach Titel oder Inhalt durchsuchen
-- **Filter**: Notizen nach Status (Offen/Erledigt) und Wichtigkeit filtern
+### Ein paar coole Extras
+- **Suche**: Du kannst nach Titel oder Inhalt suchen
+- **Filter**: Zeig nur offene, erledigte oder wichtige Notizen
 - **Sortierung**: Nach Datum, Titel oder Wichtigkeit sortieren
-- **Task-Management**: Notizen als Todo-Items mit Checkbox nutzen
-- **Toast-Benachrichtigungen**: Feedback für alle Aktionen
-- **Auto-Scroll & Highlight**: Neue/bearbeitete Notizen werden hervorgehoben
-- **SPA-Architektur**: Single Page Application mit Vue 3 und RESTful API
-- **Tests**: Umfassende Feature-Tests für die API (13 Tests)
+- **Todo-Listen**: Die Checkboxen machen die App perfekt für Aufgabenlisten
+- **Toast-Benachrichtigungen**: Du bekommst immer Feedback, was gerade passiert ist
+- **Auto-Scroll & Highlight**: Neue oder bearbeitete Notizen werden kurz hervorgehoben
+- **SPA-Architektur**: Die App lädt nur einmal, danach läuft alles flüssig über die API
+- **Tests**: 13 Feature-Tests sorgen dafür, dass alles funktioniert
 
-## Technologie-Stack
+## Technischer Stack
 
 ### Backend
-- **Laravel 12** (aktuelle Version)
+- **Laravel 12** – aktuellste Version
 - **PHP 8.3+**
-- **MariaDB** (mit DDEV) oder **SQLite** (ohne DDEV)
-- **RESTful API** mit JSON-Responses
+- **MariaDB** (wenn du DDEV nutzt) oder **SQLite** (ohne DDEV)
+- **RESTful API** mit JSON
 
 ### Frontend
 - **Vue 3** mit Composition API
-- **Vite** als Build-Tool
-- **Tailwind CSS 4** für modernes, responsives Design
-- **Axios** für HTTP-Anfragen
+- **Vite** – super schneller Build-Tool
+- **Tailwind CSS 4** für das Design
+- **Axios** für die API-Calls
 
-### Development Environment
-- **DDEV** (optional, empfohlen für lokale Entwicklung)
-- **Docker** (optional, nur für DDEV benötigt)
+### Entwicklungsumgebung
+- **DDEV** – optional, aber ich empfehle es für die lokale Entwicklung
+- **Docker** – brauchst du nur, wenn du DDEV nutzen willst
 
 ### Testing
-- **PHPUnit** für Feature-Tests
-- 13 umfassende API-Tests (inkl. Toggle-Completed)
+- **PHPUnit** für automatisierte Tests
+- 13 API-Tests, die alles abdecken
 
-## Voraussetzungen
+## Was brauchst du?
 
-### Option 1: Mit DDEV (empfohlen für lokale Entwicklung)
-- **DDEV** installiert ([Installation Guide](https://ddev.readthedocs.io/en/stable/))
-- **Docker Desktop** (wird von DDEV benötigt)
+### Option 1: Mit DDEV (empfohlen)
+- **DDEV** ([Installationsanleitung](https://ddev.readthedocs.io/en/stable/))
+- **Docker Desktop** (braucht DDEV)
 - **Git**
 
-### Option 2: Klassische Laravel-Installation
-- **PHP 8.3** oder höher
+### Option 2: Ohne DDEV
+- **PHP 8.3** oder neuer
 - **Composer**
 - **Node.js 18+** und npm
 - **MySQL/MariaDB** oder SQLite
@@ -59,24 +59,24 @@ Eine moderne Webanwendung zur Verwaltung von Notizen, gebaut mit Laravel und Vue
 
 ## Installation
 
-Wählen Sie einen der beiden Installationswege:
+Du hast zwei Möglichkeiten – mit oder ohne DDEV. Ich empfehle DDEV, weil's einfacher ist.
 
 ---
 
 ## Installation mit DDEV (Option 1)
 
-### 1. Repository klonen
+### 1. Repo klonen
 ```bash
 git clone <repository-url>
 cd notizen-app
 ```
 
-### 2. DDEV-Umgebung starten
+### 2. DDEV starten
 ```bash
 ddev start
 ```
 
-DDEV konfiguriert automatisch:
+DDEV richtet automatisch alles ein:
 - PHP 8.3
 - MariaDB Datenbank
 - Webserver (NGINX)
@@ -84,80 +84,78 @@ DDEV konfiguriert automatisch:
 
 ### 3. Dependencies installieren
 
-#### Backend-Dependencies
+Backend:
 ```bash
 ddev composer install
 ```
 
-#### Frontend-Dependencies
+Frontend:
 ```bash
 ddev npm install
 ```
 
-### 4. Umgebung konfigurieren
+### 4. App-Key generieren
 ```bash
 ddev artisan key:generate
 ```
 
-Die `.env` Datei wird von DDEV automatisch für MariaDB konfiguriert.
+Die `.env` Datei wird von DDEV automatisch konfiguriert.
 
-### 5. Datenbank-Migrationen und Seeding
+### 5. Datenbank aufsetzen
 ```bash
 ddev artisan migrate:fresh --seed
 ```
 
-Dieser Befehl:
-- Erstellt die Datenbank-Tabellen
-- Füllt die Datenbank mit 25 Test-Notizen (15 vordefinierte + 10 Faker-generierte)
+Das erstellt die Tabellen und fügt 25 Test-Notizen ein (15 vordefinierte + 10 zufällige).
 
-### 6. Frontend-Assets kompilieren
+### 6. Frontend bauen
 ```bash
 ddev npm run build
 ```
 
-### 7. Anwendung öffnen
+### 7. App öffnen
 ```bash
 ddev launch
 ```
 
-Die Anwendung ist verfügbar unter: `https://notizen-app.ddev.site`
+Die App läuft jetzt unter: `https://notizen-app.ddev.site`
 
 ---
 
 ## Installation ohne DDEV (Option 2)
 
-### 1. Repository klonen
+### 1. Repo klonen
 ```bash
 git clone <repository-url>
 cd notizen-app
 ```
 
-### 2. Backend einrichten
+### 2. Backend aufsetzen
 
-#### Dependencies installieren
+Dependencies installieren:
 ```bash
 composer install
 ```
 
-#### Umgebung konfigurieren
+Umgebung konfigurieren:
 ```bash
 cp .env.example .env
 php artisan key:generate
 ```
 
-#### Datenbank konfigurieren
+#### Datenbank einrichten
 
-**Für SQLite (einfach):**
+**SQLite (am einfachsten):**
 
-Die `.env.example` ist bereits für SQLite konfiguriert. Erstellen Sie nur die Datenbank-Datei:
+Die `.env.example` ist schon für SQLite konfiguriert. Du musst nur die Datei erstellen:
 
 ```bash
 touch database/database.sqlite
 ```
 
-**Für MySQL/MariaDB:**
+**MySQL/MariaDB:**
 
-Passen Sie die `.env` Datei an:
+Wenn du lieber MySQL/MariaDB nutzen willst, pass die `.env` an:
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
@@ -167,169 +165,167 @@ DB_USERNAME=root
 DB_PASSWORD=
 ```
 
-Erstellen Sie die Datenbank:
+Und erstell die Datenbank:
 ```bash
 mysql -u root -p
 CREATE DATABASE notizen_app;
 exit
 ```
 
-#### Datenbank-Migrationen und Seeding
+Jetzt die Tabellen und Test-Daten einfügen:
 ```bash
 php artisan migrate:fresh --seed
 ```
 
 ### 3. Frontend einrichten
 
-#### Dependencies installieren
+Dependencies installieren:
 ```bash
 npm install
 ```
 
-#### Assets kompilieren
+Assets bauen:
 ```bash
 npm run build
 ```
 
-### 4. Anwendung starten
+### 4. App starten
 
-#### Backend-Server starten (in einem Terminal)
+Backend-Server starten:
 ```bash
 php artisan serve
 ```
 
-Die Anwendung ist verfügbar unter: `http://localhost:8000`
+Die App läuft dann unter: `http://localhost:8000`
 
-#### Frontend-Dev-Server (optional, für Hot Reload)
-In einem zweiten Terminal:
+**Optional:** Wenn du am Frontend entwickeln willst, kannst du in einem zweiten Terminal den Dev-Server starten:
 ```bash
 npm run dev
 ```
 
 ---
 
-## Anwendung starten (nach Installation)
+## App starten (nach der Installation)
 
 ### Mit DDEV
 
-Die Anwendung ist nach der Installation automatisch verfügbar:
+Nach der Installation ist die App schon verfügbar:
 
 ```bash
 ddev launch
 ```
 
-Dieser Befehl öffnet die Anwendung im Browser: `https://notizen-app.ddev.site`
+Das öffnet die App im Browser: `https://notizen-app.ddev.site`
 
 **Frontend im Dev-Modus (optional):**
 ```bash
 ddev npm run dev
 ```
 
-**Wichtige DDEV-Befehle:**
+**Die wichtigsten DDEV-Befehle:**
 ```bash
 ddev start              # Umgebung starten
 ddev stop               # Umgebung stoppen
 ddev restart            # Umgebung neustarten
-ddev ssh                # In den Web-Container einloggen (Shell im Container)
-ddev describe           # Projekt-Informationen anzeigen
+ddev ssh                # In den Container einloggen
+ddev describe           # Infos über das Projekt
 ddev logs               # Logs anzeigen
 ```
 
-**Wichtig:** `ddev ssh` öffnet eine Shell **im** Docker-Container. Alle Befehle, die Sie dann ausführen, laufen innerhalb des Containers. Um den Container wieder zu verlassen, verwenden Sie `exit`.
+**Hinweis:** Mit `ddev ssh` öffnest du eine Shell **im** Docker-Container. Alles, was du da ausführst, läuft im Container. Mit `exit` kommst du wieder raus.
 
 ---
 
-### Ohne DDEV (klassisches Laravel)
+### Ohne DDEV
 
-**Backend-Server starten:**
+**Backend-Server:**
 ```bash
 php artisan serve
 ```
-Die API ist verfügbar unter: `http://localhost:8000`
+Die App läuft unter: `http://localhost:8000`
 
-**Frontend-Dev-Server (optional, für Hot Reload):**
+**Frontend-Dev-Server (optional für Hot Reload):**
 In einem zweiten Terminal:
 ```bash
 npm run dev
 ```
 
-**Anwendung öffnen:**
-Öffnen Sie Ihren Browser und navigieren Sie zu: `http://localhost:8000`
+Dann einfach `http://localhost:8000` im Browser öffnen.
 
-## Tests ausführen
+## Tests laufen lassen
 
 ### Mit DDEV
 
-**Alle Tests ausführen:**
+Alle Tests:
 ```bash
 ddev artisan test
 ```
 
-**Nur Notizen-API-Tests:**
+Nur die Notizen-API-Tests:
 ```bash
 ddev artisan test --filter=NoteApiTest
 ```
 
-**Tests mit Details:**
+Mit mehr Details:
 ```bash
 ddev artisan test --verbose
 ```
 
-### Ohne DDEV (klassisches Laravel)
+### Ohne DDEV
 
-**Alle Tests ausführen:**
+Alle Tests:
 ```bash
 php artisan test
 ```
 
-**Nur Notizen-API-Tests:**
+Nur die Notizen-API-Tests:
 ```bash
 php artisan test --filter=NoteApiTest
 ```
 
-**Tests mit Details:**
+Mit mehr Details:
 ```bash
 php artisan test --verbose
 ```
 
-## API-Dokumentation
+## API-Doku
 
 ### Basis-URL
 
-**Mit DDEV:**
+Mit DDEV:
 ```
 https://notizen-app.ddev.site/api
 ```
 
-**Ohne DDEV:**
+Ohne DDEV:
 ```
 http://localhost:8000/api
 ```
 
-### Endpoints
+### Die Endpoints
 
-#### Alle Notizen abrufen
+#### Alle Notizen holen
 ```http
 GET /api/notes
 ```
 
-**Query-Parameter:**
-- `search` (optional): Suche nach Titel oder Inhalt
-- `is_important` (optional): Filter nach Wichtigkeit (`true`/`false`/`1`/`0`)
-- `sort_by` (optional): Sortierfeld (`created_at`, `title`, `is_important`)
-- `sort_order` (optional): Sortierrichtung (`asc`, `desc`)
+**Du kannst folgende Parameter anhängen:**
+- `search` – Suche nach Titel oder Inhalt
+- `is_important` – Zeig nur wichtige (`true`/`1`) oder unwichtige (`false`/`0`) Notizen
+- `sort_by` – Sortieren nach `created_at`, `title` oder `is_important`
+- `sort_order` – `asc` für aufsteigend, `desc` für absteigend
 
 **Beispiel:**
 ```http
 GET /api/notes?search=Laravel&is_important=1&sort_by=created_at&sort_order=desc
 ```
 
-#### Einzelne Notiz abrufen
+#### Eine einzelne Notiz holen
 ```http
 GET /api/notes/{id}
 ```
 
-#### Notiz erstellen
+#### Neue Notiz erstellen
 ```http
 POST /api/notes
 Content-Type: application/json
@@ -341,7 +337,7 @@ Content-Type: application/json
 }
 ```
 
-#### Notiz aktualisieren
+#### Notiz bearbeiten
 ```http
 PUT /api/notes/{id}
 Content-Type: application/json
@@ -358,12 +354,12 @@ Content-Type: application/json
 DELETE /api/notes/{id}
 ```
 
-#### Notiz als erledigt markieren (Toggle)
+#### Notiz abhaken/aufhaken
 ```http
 PATCH /api/notes/{id}/toggle-completed
 ```
 
-**Hinweis:** Dieser Endpoint wechselt zwischen erledigt/unerledigt. Kein Request-Body erforderlich.
+Dieser Endpoint wechselt zwischen erledigt und offen. Du brauchst keinen Request-Body.
 
 ## Projektstruktur
 
@@ -411,74 +407,74 @@ notizen-app/
 └── README.md                             # Diese Datei
 ```
 
-## Entwicklungs-Hinweise
+## Entwicklungs-Notizen
 
 ### Laravel-Konventionen
-- Alle Controller folgen den Laravel-Konventionen
-- RESTful Resource Controller für API
-- Model verwendet `$fillable` und `$casts`
-- Validierung in Controller-Methoden
+- Die Controller halten sich an Laravel-Standards
+- RESTful Resource Controller für die API
+- Model nutzt `$fillable` und `$casts`
+- Validierung passiert in den Controller-Methoden
 
 ### Vue Best Practices
-- Composition API wird durchgängig verwendet
-- Komponenten sind modular und wiederverwendbar
-- Props und Emits sind typisiert
-- Responsive Design mit Tailwind CSS
+- Durchgängig Composition API
+- Komponenten sind modular aufgebaut
+- Props und Emits sind sauber typisiert
+- Responsives Design mit Tailwind CSS
 
 ### Code-Qualität
-- Saubere Trennung von Backend und Frontend
-- API folgt RESTful-Prinzipien
-- Laravel und Vue Best Practices
-- Keine externen Pakete außer Laravel-Standard
+- Saubere Trennung zwischen Backend und Frontend
+- Die API folgt RESTful-Prinzipien
+- Laravel- und Vue-Best-Practices umgesetzt
+- Keine zusätzlichen Pakete außer dem Laravel-Standard
 
-## Features im Detail
+## Die Features im Detail
 
-### Such-Funktion
-Die Suchfunktion durchsucht sowohl Titel als auch Inhalt der Notizen in Echtzeit.
+### Suche
+Die Suche durchsucht Titel und Inhalt gleichzeitig – in Echtzeit.
 
 ### Filter
 
-**Status-Filter:**
-- **Alle**: Zeigt alle Notizen (offen und erledigt)
-- **Offen**: Zeigt nur offene Notizen
-- **Erledigt**: Zeigt nur erledigte Notizen
+**Nach Status:**
+- **Alle** – Zeigt alles
+- **Offen** – Nur nicht erledigte Notizen
+- **Erledigt** – Nur abgehakte Notizen
 
-**Wichtigkeits-Filter:**
-- **Alle**: Zeigt alle Notizen
-- **Wichtig**: Zeigt nur wichtige Notizen
+**Nach Wichtigkeit:**
+- **Alle** – Zeigt alles
+- **Wichtig** – Nur die wichtigen Notizen
 
 ### Sortierung
-- **Neueste zuerst**: Nach Erstellungsdatum absteigend
-- **Älteste zuerst**: Nach Erstellungsdatum aufsteigend
-- **Titel A-Z**: Alphabetisch aufsteigend
-- **Titel Z-A**: Alphabetisch absteigend
-- **Wichtigkeit**: Wichtige Notizen zuerst
+- **Neueste zuerst** – Nach Erstellungsdatum absteigend
+- **Älteste zuerst** – Nach Erstellungsdatum aufsteigend
+- **Titel A-Z** – Alphabetisch
+- **Titel Z-A** – Alphabetisch rückwärts
+- **Wichtigkeit** – Wichtige zuerst
 
 ### Responsives Design
-- Optimiert für Mobile, Tablet und Desktop
-- Grid-Layout passt sich an Bildschirmgröße an
-- Touch-friendly Interface auf Mobile-Geräten
+- Funktioniert auf Handy, Tablet und Desktop
+- Das Grid passt sich automatisch an
+- Touch-friendly auf Mobilgeräten
 
-### Task-Management mit Completed-Status
-- **Checkbox:** Jede Notiz hat eine Checkbox zum Markieren
-- **Visuelle Kennzeichnung:** Erledigte Notizen sind durchgestrichen und leicht ausgegraut
-- **Timestamp:** System speichert WANN eine Notiz erledigt wurde
-- **Toggle:** Erledigt-Status kann jederzeit gewechselt werden
-- **Use-Cases:** Ideal für Todo-Listen, Einkaufslisten, Aufgaben-Tracking
+### Task-Management
+- **Checkbox** – Jede Notiz kann abgehakt werden
+- **Visuelle Kennzeichnung** – Erledigte Notizen sind durchgestrichen und ausgegraut
+- **Timestamp** – Die App merkt sich, wann du was erledigt hast
+- **Toggle** – Du kannst den Status jederzeit ändern
+- **Use-Cases** – Perfekt für Todo-Listen, Einkaufslisten oder Aufgaben-Tracking
 
-## Fehlerbehebung
+## Wenn's nicht läuft
 
 ### Mit DDEV
 
 **DDEV startet nicht:**
 ```bash
-# Docker prüfen
+# Prüf erst mal, ob Docker läuft
 docker ps
 
 # DDEV neustarten
 ddev restart
 
-# DDEV-Konfiguration neu erstellen
+# Wenn nix hilft, alles neu aufsetzen
 ddev delete -O
 ddev config
 ddev start
@@ -486,16 +482,16 @@ ddev start
 
 **Datenbank-Probleme:**
 ```bash
-# Datenbank zurücksetzen und neu befüllen
+# Datenbank neu aufsetzen
 ddev artisan migrate:fresh --seed
 ```
 
-**Frontend-Assets werden nicht geladen:**
+**Frontend lädt nicht richtig:**
 ```bash
-# Assets neu kompilieren
+# Assets neu bauen
 ddev npm run build
 
-# Bei Problemen: node_modules neu installieren
+# Wenn's immer noch nicht geht, node_modules neu installieren
 ddev ssh
 rm -rf node_modules package-lock.json
 exit
@@ -505,7 +501,7 @@ ddev npm run build
 
 **Cache-Probleme:**
 ```bash
-# Laravel-Caches leeren
+# Alle Laravel-Caches leeren
 ddev artisan config:clear
 ddev artisan cache:clear
 ddev artisan route:clear
@@ -513,28 +509,25 @@ ddev artisan view:clear
 ```
 
 **Port-Konflikte:**
-Falls DDEV Port-Konflikte meldet:
+Wenn DDEV meckert, dass die Ports schon belegt sind:
 ```bash
-# Ports in .ddev/config.yaml anpassen
 ddev stop
-# config.yaml bearbeiten
+# Bearbeite .ddev/config.yaml und ändere die Ports
 ddev start
 ```
 
 ---
 
-### Ohne DDEV (klassisches Laravel)
+### Ohne DDEV
 
-**Port bereits in Verwendung:**
-Falls Port 8000 bereits verwendet wird:
+**Port 8000 ist schon belegt:**
 ```bash
 php artisan serve --port=8001
 ```
 
-**Vite-Fehler:**
-Falls der Vite-Server nicht startet:
+**Vite macht Probleme:**
 ```bash
-# Node-Modules neu installieren
+# node_modules neu installieren
 rm -rf node_modules package-lock.json
 npm install
 npm run dev
@@ -542,7 +535,7 @@ npm run dev
 
 **Datenbank-Probleme:**
 ```bash
-# Datenbank zurücksetzen
+# Datenbank neu aufsetzen
 php artisan migrate:fresh --seed
 ```
 
@@ -557,12 +550,12 @@ php artisan view:clear
 
 **Composer-Fehler:**
 ```bash
-# Composer-Cache leeren
+# Composer-Cache leeren und neu installieren
 composer clear-cache
 composer install
 ```
 
-## Datenbank-Zugriff
+## Datenbank ansehen
 
 ### Mit DDEV
 
@@ -571,7 +564,7 @@ composer install
 # MySQL-CLI öffnen
 ddev mysql
 
-# Datenbank-Informationen anzeigen
+# Datenbank-Infos anzeigen
 ddev describe
 ```
 
@@ -580,7 +573,7 @@ ddev describe
 ddev launch -a
 ```
 
-**Zugangsdaten:**
+**Zugangsdaten für Adminer:**
 - Server: `db`
 - Benutzername: `db`
 - Passwort: `db`
@@ -592,7 +585,7 @@ ddev launch -a
 
 **SQLite:**
 ```bash
-# SQLite-Datenbank öffnen
+# Datenbank öffnen
 sqlite3 database/database.sqlite
 
 # Tabellen anzeigen
@@ -601,7 +594,7 @@ sqlite3 database/database.sqlite
 # Query ausführen
 SELECT * FROM notes;
 
-# Verlassen
+# Raus
 .quit
 ```
 
@@ -620,64 +613,64 @@ SHOW TABLES;
 SELECT * FROM notes;
 ```
 
-## Nützliche DDEV-Befehle (nur für DDEV-Nutzer)
+## Nützliche DDEV-Befehle
 
 ```bash
-# Projekt-Status anzeigen
+# Projekt-Status
 ddev describe
 
-# In Container einloggen (öffnet Shell IM Container)
+# In den Container einloggen
 ddev ssh
 
-# Composer-Befehle ausführen
+# Composer-Befehle
 ddev composer <befehl>
 
-# Artisan-Befehle ausführen
+# Artisan-Befehle
 ddev artisan <befehl>
 
-# NPM-Befehle ausführen
+# NPM-Befehle
 ddev npm <befehl>
 
-# Logs anzeigen
+# Logs anschauen
 ddev logs
 
-# Snapshots erstellen (Backup)
+# Backup erstellen
 ddev snapshot
 
-# Snapshot wiederherstellen
+# Backup wiederherstellen
 ddev snapshot restore
 ```
 
-### Container-Zugriff mit `ddev ssh` (nur bei DDEV)
+### Was macht `ddev ssh`?
 
-Mit `ddev ssh` loggen Sie sich direkt in den Web-Container ein. Sie befinden sich dann im Projektverzeichnis `/var/www/html` innerhalb des Containers.
+Mit `ddev ssh` loggst du dich direkt in den Container ein. Du landest dann in `/var/www/html` innerhalb des Containers.
 
 **Beispiel:**
 ```bash
 $ ddev ssh
-web:/var/www/html$ ls              # Dateien im Container anzeigen
-web:/var/www/html$ php artisan -V  # Laravel-Version prüfen (ohne ddev-Präfix)
-web:/var/www/html$ npm -v          # NPM-Version prüfen
+web:/var/www/html$ ls              # Dateien im Container
+web:/var/www/html$ php artisan -V  # Laravel-Version (ohne ddev davor)
+web:/var/www/html$ npm -v          # NPM-Version
 web:/var/www/html$ exit            # Container verlassen
 $
 ```
 
-**Wann benötigt man `ddev ssh`?**
-- Debugging im Container-Kontext
+**Wann brauchst du das?**
+- Debugging direkt im Container
 - Direkte Datei-Operationen
 - Manuelle Paket-Installation ohne `ddev`-Präfix
-- Umgebungsvariablen im Container prüfen
+- Umgebungsvariablen im Container checken
 
-**Hinweis:** Normalerweise ist `ddev ssh` nicht nötig, da Sie alle Befehle mit `ddev artisan`, `ddev composer`, etc. von außen ausführen können.
+**Tipp:** Normalerweise brauchst du `ddev ssh` nicht – du kannst fast alles mit `ddev artisan`, `ddev composer`, etc. von außen machen.
 
 ## Deployment
 
-Für Production-Deployment sollte die Anwendung nicht mit DDEV betrieben werden. Stattdessen:
+Für Production solltest du nicht DDEV nutzen. Stattdessen:
 
-1. Standard-Webserver (NGINX/Apache) mit PHP-FPM
+1. Normaler Webserver (NGINX/Apache) mit PHP-FPM
 2. MySQL/MariaDB Datenbank
-3. Laravel-Queue-Worker für Background-Jobs (falls benötigt)
-4. Vite-Assets im Production-Modus kompilieren
+3. Laravel-Queue-Worker für Background-Jobs (falls nötig)
+4. Vite-Assets im Production-Modus bauen
 
-Details siehe Laravel-Dokumentation: [Deployment](https://laravel.com/docs/deployment)
+Mehr Details in der Laravel-Doku: [Deployment](https://laravel.com/docs/deployment)
 

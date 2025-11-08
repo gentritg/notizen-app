@@ -17,16 +17,17 @@ class SecurityHeaders
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
-        
+
         if ($request->secure()) {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
-        $allowedOrigins = [
+        $allowedOrigins = array_filter([
+            config('app.url'),
             'http://localhost:8000',
             'http://127.0.0.1:8000',
             'https://notizen-app.ddev.site',
-        ];
+        ]);
 
         $origin = $request->header('Origin');
         if (in_array($origin, $allowedOrigins)) {

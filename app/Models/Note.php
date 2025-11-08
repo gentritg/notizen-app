@@ -44,10 +44,12 @@ class Note extends Model
     {
         if ($this->isCompleted()) {
             $this->markAsNotCompleted();
+
             return false;
         }
-        
+
         $this->markAsCompleted();
+
         return true;
     }
 }

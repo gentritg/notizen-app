@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Http\Requests\Note;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class UpdateNoteRequest extends FormRequest
+{
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    public function rules(): array
+    {
+        return [
+            'title' => 'sometimes|required|string|max:255',
+            'content' => 'sometimes|required|string|max:10000',
+            'is_important' => 'sometimes|boolean',
+        ];
+    }
+}
